@@ -1,26 +1,49 @@
 import React from 'react';
-import logo from './logo.svg';
+import SearchBar from '../src/components/searchBar'
+import GiphContainer from '../src/containers/giphContainer'
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component{
+  constructor(){
+    super();
+    this.state = {
+      searchText: "",
+      images: []
+    }
+  }
+
+  searchText = (event) => {
+    this.setState({
+        searchText: event.target.value
+    })
+  }
+
+  runSearch = () => {
+
+    let object = {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+          Accepts: 'application/json'
+      },
+      body: JSON.stringify({
+        term: this.state.searchText
+      })
+    }
+
+    fetch("http://localhost:3000/get_gifs", object).then(response => response.json()).then(imagesArray => this.setState({images: imagesArray.data}))
+  }
+
+  render(){
+    return(
+      <div>
+        <SearchBar 
+          search={this.searchText} 
+          run={this.runSearch}/>
+        <GiphContainer images={this.state.images}/>
+      </div>
+    )
+  }
 }
 
 export default App;
